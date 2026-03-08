@@ -15,8 +15,8 @@ export default function SearchPurchase() {
   const factories = store.getFactories();
 
   const purchases = store.getPurchases().filter(p => {
-    if (clothId && p.cloth_id !== clothId) return false;
-    if (factoryId && p.factory_id !== factoryId) return false;
+    if (clothId && clothId !== 'all' && p.cloth_id !== clothId) return false;
+    if (factoryId && factoryId !== 'all' && p.factory_id !== factoryId) return false;
     if (date && p.purchase_date !== date) return false;
     return true;
   });
