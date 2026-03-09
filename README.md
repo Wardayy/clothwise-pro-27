@@ -1,73 +1,105 @@
-# Welcome to your Lovable project
+📌 Project Overview
 
-## Project info
+ClothWare Pro is a web-based business management system designed for clothing stores and small fashion retailers.
+It helps shop owners manage inventory, sales, purchases, and revenue tracking through a simple and user-friendly dashboard.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+The goal of this project is to digitize manual shop management and provide business insights through automated calculations and reports.
 
-## How can I edit this code?
+* Features
+ 1.Authentication System
 
-There are several ways of editing your application.
+Secure login system
 
-**Use Lovable**
+User access to business dashboard after authentication
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+2.Inventory Management
 
-Changes made via Lovable will be committed automatically to this repo.
+Add new clothing items
 
-**Use your preferred IDE**
+Update stock quantity
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Track available inventory
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Prevent negative stock levels
 
-Follow these steps:
+3. Sales Management
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+Record sales transactions
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Automatically reduce stock after sale
 
-# Step 3: Install the necessary dependencies.
-npm i
+Track product-wise sales
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+4. Purchase Management
 
-**Edit a file directly in GitHub**
+Add new purchase entries
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Increase stock automatically
 
-**Use GitHub Codespaces**
+Maintain supplier purchase records
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+5. Dashboard & Reports
 
-## What technologies are used for this project?
+Business overview dashboard
 
-This project is built with:
+Total revenue calculation
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Stock availability tracking
 
-## How can I deploy this project?
+Business analytics in Pakistani Rupees (PKR)
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+🏗️ System Architecture
 
-## Can I connect a custom domain to my Lovable project?
+The system follows a 3-Tier Architecture:
 
-Yes, you can!
+1️⃣ Presentation Layer
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+User Interface for:
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Login
+
+Inventory management
+
+Purchase entry
+
+Sales entry
+
+Reports dashboard
+
+2️⃣ Business Logic Layer
+
+Handles:
+
+Profit calculation
+
+Inventory validation
+
+Revenue computation
+
+Business rules
+
+3️⃣ Data Layer
+
+Stores application data such as:
+
+User accounts
+
+Product inventory
+
+Sales records
+
+Purchase records
+
+🛠️ Technologies Used
+
+This project is built using modern web technologies:
+
+React – Frontend framework
+
+TypeScript – Type-safe JavaScript
+
+Vite – Fast development build tool
+
+Tailwind CSS – Utility-first CSS framework
+
+shadcn-ui – UI component library
