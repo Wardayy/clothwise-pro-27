@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { store, type Customer } from '@/lib/store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,28 +10,29 @@ import { toast } from 'sonner';
 import { Pencil, Trash2 } from 'lucide-react';
 
 export default function ManageCustomer() {
-  const [customers, setCustomers] = useState(store.getCustomers());
+  const qc = useQueryClient();
+  const { data: customers = [] } = useQuery({ queryKey: ['customers'], queryFn: () => store.getCustomers() });
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
   const [editId, setEditId] = useState<string | null>(null);
 
-  const refresh = () => setCustomers(store.getCustomers());
+  const refresh = () => qc.invalidateQueries({ queryKey: ['customers'] });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !contact.trim()) { toast.error('Fill all fields'); return; }
-    if (editId) {
-      store.updateCustomer(editId, { customer_name: name, contact });
-      toast.success('Customer updated'); setEditId(null);
-    } else {
-      store.addCustomer({ customer_name: name, contact });
-      toast.success('Customer added');
-    }
-    setName(''); setContact(''); refresh();
+    try {
+      if (editId) { await store.updateCustomer(editId, { customer_name: name, contact }); toast.success('Customer updated'); setEditId(null); }
+      else { await store.addCustomer({ customer_name: name, contact }); toast.success('Customer added'); }
+      setName(''); setContact(''); refresh();
+    } catch (e: any) { toast.error(e.message); }
   };
 
   const handleEdit = (c: Customer) => { setEditId(c.customer_id); setName(c.customer_name); setContact(c.contact); };
-  const handleDelete = (id: string) => { store.deleteCustomer(id); toast.success('Deleted'); refresh(); };
+  const handleDelete = async (id: string) => {
+    try { await store.deleteCustomer(id); toast.success('Deleted'); refresh(); }
+    catch (e: any) { toast.error(e.message); }
+  };
 
   return (
     <div className="space-y-6">
@@ -39,8 +41,8 @@ export default function ManageCustomer() {
         <CardHeader><CardTitle className="text-base">{editId ? 'Edit Customer' : 'Add Customer'}</CardTitle></CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
-            <div className="space-y-1 flex-1"><Label>Customer Name</Label><Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Ahmed Traders" /></div>
-            <div className="space-y-1 flex-1"><Label>Contact</Label><Input value={contact} onChange={e => setContact(e.target.value)} placeholder="e.g. 0300-1234567" /></div>
+            <div className="space-y-1 flex-1"><Label>Customer Name</Label><Input value={name} onChange={e => setName(e.target.value)} /></div>
+            <div className="space-y-1 flex-1"><Label>Contact</Label><Input value={contact} onChange={e => setContact(e.target.value)} /></div>
             <div className="flex items-end gap-2">
               <Button type="submit">{editId ? 'Update' : 'Add'}</Button>
               {editId && <Button type="button" variant="outline" onClick={() => { setEditId(null); setName(''); setContact(''); }}>Cancel</Button>}

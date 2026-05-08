@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { store, type Cloth } from '@/lib/store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,29 +10,29 @@ import { toast } from 'sonner';
 import { Pencil, Trash2 } from 'lucide-react';
 
 export default function ManageCloth() {
-  const [cloths, setCloths] = useState(store.getCloths());
+  const qc = useQueryClient();
+  const { data: cloths = [] } = useQuery({ queryKey: ['cloths'], queryFn: () => store.getCloths() });
   const [name, setName] = useState('');
   const [type, setType] = useState('');
   const [editId, setEditId] = useState<string | null>(null);
 
-  const refresh = () => setCloths(store.getCloths());
+  const refresh = () => qc.invalidateQueries({ queryKey: ['cloths'] });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !type.trim()) { toast.error('Fill all fields'); return; }
-    if (editId) {
-      store.updateCloth(editId, { cloth_name: name, cloth_type: type });
-      toast.success('Cloth updated');
-      setEditId(null);
-    } else {
-      store.addCloth({ cloth_name: name, cloth_type: type });
-      toast.success('Cloth added');
-    }
-    setName(''); setType(''); refresh();
+    try {
+      if (editId) { await store.updateCloth(editId, { cloth_name: name, cloth_type: type }); toast.success('Cloth updated'); setEditId(null); }
+      else { await store.addCloth({ cloth_name: name, cloth_type: type }); toast.success('Cloth added'); }
+      setName(''); setType(''); refresh();
+    } catch (e: any) { toast.error(e.message); }
   };
 
   const handleEdit = (c: Cloth) => { setEditId(c.cloth_id); setName(c.cloth_name); setType(c.cloth_type); };
-  const handleDelete = (id: string) => { store.deleteCloth(id); toast.success('Deleted'); refresh(); };
+  const handleDelete = async (id: string) => {
+    try { await store.deleteCloth(id); toast.success('Deleted'); refresh(); }
+    catch (e: any) { toast.error(e.message); }
+  };
 
   return (
     <div className="space-y-6">

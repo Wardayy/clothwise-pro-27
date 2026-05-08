@@ -1,12 +1,13 @@
+import { useQuery } from '@tanstack/react-query';
 import { store } from '@/lib/store';
 import { formatPKR } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export default function SalesHistory() {
-  const sales = store.getSales();
-  const cloths = store.getCloths();
-  const customers = store.getCustomers();
+  const { data: sales = [] } = useQuery({ queryKey: ['sales'], queryFn: () => store.getSales() });
+  const { data: cloths = [] } = useQuery({ queryKey: ['cloths'], queryFn: () => store.getCloths() });
+  const { data: customers = [] } = useQuery({ queryKey: ['customers'], queryFn: () => store.getCustomers() });
 
   return (
     <div className="space-y-6">
@@ -21,12 +22,8 @@ export default function SalesHistory() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Cloth</TableHead>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Quantity</TableHead>
-                    <TableHead>Price/Meter</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
+                    <TableHead>Cloth</TableHead><TableHead>Customer</TableHead><TableHead>Quantity</TableHead>
+                    <TableHead>Price/Meter</TableHead><TableHead>Date</TableHead><TableHead className="text-right">Total</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

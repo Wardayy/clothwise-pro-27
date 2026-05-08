@@ -1,20 +1,15 @@
+import { useQuery } from '@tanstack/react-query';
 import { store } from '@/lib/store';
 import { formatPKR } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-const COLORS = [
-  'hsl(var(--primary))',
-  'hsl(var(--accent))',
-  'hsl(var(--warning))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--destructive))',
-];
+const COLORS = ['hsl(var(--primary))', 'hsl(var(--accent))', 'hsl(var(--warning))', 'hsl(var(--chart-4))', 'hsl(var(--destructive))'];
 
 export default function SalesAnalytics() {
-  const cloths = store.getCloths();
-  const sales = store.getSales();
-  const purchases = store.getPurchases();
+  const { data: cloths = [] } = useQuery({ queryKey: ['cloths'], queryFn: () => store.getCloths() });
+  const { data: sales = [] } = useQuery({ queryKey: ['sales'], queryFn: () => store.getSales() });
+  const { data: purchases = [] } = useQuery({ queryKey: ['purchases'], queryFn: () => store.getPurchases() });
 
   const clothData = cloths.map(c => {
     const totalSales = sales.filter(s => s.cloth_id === c.cloth_id).reduce((sum, s) => sum + s.total_revenue, 0);
@@ -24,17 +19,13 @@ export default function SalesAnalytics() {
 
   const pieData = clothData.filter(d => d.sales > 0).map(d => ({ name: d.name, value: d.sales }));
 
-  // Daily revenue
   const dailyMap: Record<string, number> = {};
-  sales.forEach(s => {
-    dailyMap[s.sale_date] = (dailyMap[s.sale_date] || 0) + s.total_revenue;
-  });
+  sales.forEach(s => { dailyMap[s.sale_date] = (dailyMap[s.sale_date] || 0) + s.total_revenue; });
   const dailyData = Object.entries(dailyMap).sort().map(([date, amount]) => ({ date, amount }));
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-heading font-bold">Sales Analytics</h1>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader><CardTitle className="text-base">Revenue by Cloth</CardTitle></CardHeader>
@@ -50,9 +41,7 @@ export default function SalesAnalytics() {
                   <Bar dataKey="purchases" fill="hsl(var(--muted-foreground))" name="Purchases" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
-            ) : (
-              <p className="text-muted-foreground text-sm text-center py-8">No sales data yet.</p>
-            )}
+            ) : <p className="text-muted-foreground text-sm text-center py-8">No sales data yet.</p>}
           </CardContent>
         </Card>
 
@@ -68,9 +57,7 @@ export default function SalesAnalytics() {
                   <Tooltip formatter={(v: number) => formatPKR(v)} />
                 </PieChart>
               </ResponsiveContainer>
-            ) : (
-              <p className="text-muted-foreground text-sm text-center py-8">No sales data yet.</p>
-            )}
+            ) : <p className="text-muted-foreground text-sm text-center py-8">No sales data yet.</p>}
           </CardContent>
         </Card>
       </div>
@@ -88,9 +75,7 @@ export default function SalesAnalytics() {
                 <Bar dataKey="amount" fill="hsl(var(--accent))" name="Revenue" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          ) : (
-            <p className="text-muted-foreground text-sm text-center py-8">No daily data yet.</p>
-          )}
+          ) : <p className="text-muted-foreground text-sm text-center py-8">No daily data yet.</p>}
         </CardContent>
       </Card>
     </div>

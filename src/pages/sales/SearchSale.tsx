@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { store } from '@/lib/store';
 import { formatPKR } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,10 +12,11 @@ export default function SearchSale() {
   const [clothId, setClothId] = useState('');
   const [customerId, setCustomerId] = useState('');
   const [date, setDate] = useState('');
-  const cloths = store.getCloths();
-  const customers = store.getCustomers();
+  const { data: cloths = [] } = useQuery({ queryKey: ['cloths'], queryFn: () => store.getCloths() });
+  const { data: customers = [] } = useQuery({ queryKey: ['customers'], queryFn: () => store.getCustomers() });
+  const { data: allSales = [] } = useQuery({ queryKey: ['sales'], queryFn: () => store.getSales() });
 
-  const sales = store.getSales().filter(s => {
+  const sales = allSales.filter(s => {
     if (clothId && clothId !== 'all' && s.cloth_id !== clothId) return false;
     if (customerId && customerId !== 'all' && s.customer_id !== customerId) return false;
     if (date && s.sale_date !== date) return false;
@@ -63,12 +65,8 @@ export default function SearchSale() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Cloth</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Qty</TableHead>
-                  <TableHead>Price/m</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
+                  <TableHead>Cloth</TableHead><TableHead>Customer</TableHead><TableHead>Qty</TableHead>
+                  <TableHead>Price/m</TableHead><TableHead>Date</TableHead><TableHead className="text-right">Total</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

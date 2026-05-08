@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { store } from '@/lib/store';
 import { formatPKR } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,31 +10,29 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 
 export default function AddPurchase() {
-  const cloths = store.getCloths();
-  const factories = store.getFactories();
+  const qc = useQueryClient();
+  const { data: cloths = [] } = useQuery({ queryKey: ['cloths'], queryFn: () => store.getCloths() });
+  const { data: factories = [] } = useQuery({ queryKey: ['factories'], queryFn: () => store.getFactories() });
   const [clothId, setClothId] = useState('');
   const [factoryId, setFactoryId] = useState('');
   const [quantity, setQuantity] = useState('');
   const [costPerMeter, setCostPerMeter] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [busy, setBusy] = useState(false);
 
   const total = (Number(quantity) || 0) * (Number(costPerMeter) || 0);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clothId || !factoryId || !quantity || !costPerMeter) {
-      toast.error('Please fill all fields');
-      return;
-    }
-    store.addPurchase({
-      cloth_id: clothId,
-      factory_id: factoryId,
-      quantity_meter: Number(quantity),
-      cost_per_meter: Number(costPerMeter),
-      purchase_date: date,
-    });
-    toast.success('Purchase recorded successfully');
-    setClothId(''); setFactoryId(''); setQuantity(''); setCostPerMeter('');
+    if (!clothId || !factoryId || !quantity || !costPerMeter) { toast.error('Please fill all fields'); return; }
+    setBusy(true);
+    try {
+      await store.addPurchase({ cloth_id: clothId, factory_id: factoryId, quantity_meter: Number(quantity), cost_per_meter: Number(costPerMeter), purchase_date: date });
+      toast.success('Purchase recorded successfully');
+      setClothId(''); setFactoryId(''); setQuantity(''); setCostPerMeter('');
+      qc.invalidateQueries();
+    } catch (e: any) { toast.error(e.message); }
+    setBusy(false);
   };
 
   return (
@@ -76,12 +75,10 @@ export default function AddPurchase() {
               </div>
               <div className="space-y-2">
                 <Label>Total Cost</Label>
-                <div className="h-10 flex items-center px-3 rounded-md bg-muted text-lg font-bold font-heading">
-                  {formatPKR(total)}
-                </div>
+                <div className="h-10 flex items-center px-3 rounded-md bg-muted text-lg font-bold font-heading">{formatPKR(total)}</div>
               </div>
             </div>
-            <Button type="submit" className="w-full sm:w-auto">Save Purchase</Button>
+            <Button type="submit" className="w-full sm:w-auto" disabled={busy}>{busy ? 'Saving...' : 'Save Purchase'}</Button>
           </form>
         </CardContent>
       </Card>
