@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { store } from '@/lib/store';
 import { formatPKR } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,36 +10,36 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 
 export default function RecordSale() {
-  const cloths = store.getCloths();
-  const customers = store.getCustomers();
+  const qc = useQueryClient();
+  const { data: cloths = [] } = useQuery({ queryKey: ['cloths'], queryFn: () => store.getCloths() });
+  const { data: customers = [] } = useQuery({ queryKey: ['customers'], queryFn: () => store.getCustomers() });
   const [clothId, setClothId] = useState('');
   const [customerId, setCustomerId] = useState('');
   const [quantity, setQuantity] = useState('');
   const [salePrice, setSalePrice] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [busy, setBusy] = useState(false);
+
+  const { data: stock = 0 } = useQuery({
+    queryKey: ['stock', clothId],
+    queryFn: () => store.getStock(clothId),
+    enabled: !!clothId,
+  });
 
   const total = (Number(quantity) || 0) * (Number(salePrice) || 0);
-  const stock = clothId ? store.getStock(clothId) : 0;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clothId || !customerId || !quantity || !salePrice) {
-      toast.error('Please fill all fields');
-      return;
-    }
-    if (Number(quantity) > stock) {
-      toast.error('Insufficient Stock! Available: ' + stock + 'm');
-      return;
-    }
-    store.addSale({
-      cloth_id: clothId,
-      customer_id: customerId,
-      quantity_meter: Number(quantity),
-      sale_price: Number(salePrice),
-      sale_date: date,
-    });
-    toast.success('Sale recorded successfully');
-    setClothId(''); setCustomerId(''); setQuantity(''); setSalePrice('');
+    if (!clothId || !customerId || !quantity || !salePrice) { toast.error('Please fill all fields'); return; }
+    if (Number(quantity) > stock) { toast.error('Insufficient Stock! Available: ' + stock + 'm'); return; }
+    setBusy(true);
+    try {
+      await store.addSale({ cloth_id: clothId, customer_id: customerId, quantity_meter: Number(quantity), sale_price: Number(salePrice), sale_date: date });
+      toast.success('Sale recorded successfully');
+      setClothId(''); setCustomerId(''); setQuantity(''); setSalePrice('');
+      qc.invalidateQueries();
+    } catch (e: any) { toast.error(e.message); }
+    setBusy(false);
   };
 
   return (
@@ -82,12 +83,10 @@ export default function RecordSale() {
               </div>
               <div className="space-y-2">
                 <Label>Total Revenue</Label>
-                <div className="h-10 flex items-center px-3 rounded-md bg-muted text-lg font-bold font-heading">
-                  {formatPKR(total)}
-                </div>
+                <div className="h-10 flex items-center px-3 rounded-md bg-muted text-lg font-bold font-heading">{formatPKR(total)}</div>
               </div>
             </div>
-            <Button type="submit" className="w-full sm:w-auto">Record Sale</Button>
+            <Button type="submit" className="w-full sm:w-auto" disabled={busy}>{busy ? 'Saving...' : 'Record Sale'}</Button>
           </form>
         </CardContent>
       </Card>

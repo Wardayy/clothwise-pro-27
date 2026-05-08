@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import { store } from '@/lib/store';
 import { formatPKR } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,24 +6,19 @@ import { ShoppingCart, TrendingUp, Package, BarChart3 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function Dashboard() {
-  const revenue = store.getRevenue();
-  const inventory = store.getInventory();
-  const purchases = store.getPurchases();
-  const sales = store.getSales();
+  const { data: revenue } = useQuery({ queryKey: ['revenue'], queryFn: () => store.getRevenue() });
+  const { data: inventory = [] } = useQuery({ queryKey: ['inventory'], queryFn: () => store.getInventory() });
+  const { data: purchases = [] } = useQuery({ queryKey: ['purchases'], queryFn: () => store.getPurchases() });
+  const { data: sales = [] } = useQuery({ queryKey: ['sales'], queryFn: () => store.getSales() });
 
   const stats = [
-    { label: 'Total Purchases', value: formatPKR(revenue.totalPurchaseCost), icon: ShoppingCart, count: purchases.length },
-    { label: 'Total Sales', value: formatPKR(revenue.totalSalesRevenue), icon: TrendingUp, count: sales.length },
-    { label: 'Profit', value: formatPKR(revenue.profit), icon: BarChart3, count: null },
+    { label: 'Total Purchases', value: formatPKR(revenue?.totalPurchaseCost ?? 0), icon: ShoppingCart, count: purchases.length },
+    { label: 'Total Sales', value: formatPKR(revenue?.totalSalesRevenue ?? 0), icon: TrendingUp, count: sales.length },
+    { label: 'Profit', value: formatPKR(revenue?.profit ?? 0), icon: BarChart3, count: null },
     { label: 'Cloth Types', value: inventory.length.toString(), icon: Package, count: null },
   ];
 
-  const chartData = inventory.map(i => ({
-    name: i.cloth_name,
-    purchased: i.total_purchased,
-    sold: i.total_sold,
-    stock: i.current_stock,
-  }));
+  const chartData = inventory.map(i => ({ name: i.cloth_name, purchased: i.total_purchased, sold: i.total_sold, stock: i.current_stock }));
 
   return (
     <div className="space-y-6">
@@ -40,18 +36,14 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold font-heading">{s.value}</div>
-              {s.count !== null && (
-                <p className="text-xs text-muted-foreground mt-1">{s.count} transactions</p>
-              )}
+              {s.count !== null && <p className="text-xs text-muted-foreground mt-1">{s.count} transactions</p>}
             </CardContent>
           </Card>
         ))}
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base font-heading">Inventory Overview</CardTitle>
-        </CardHeader>
+        <CardHeader><CardTitle className="text-base font-heading">Inventory Overview</CardTitle></CardHeader>
         <CardContent>
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>

@@ -1,10 +1,11 @@
+import { useQuery } from '@tanstack/react-query';
 import { store } from '@/lib/store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 
 export default function ViewStock() {
-  const inventory = store.getInventory();
+  const { data: inventory = [] } = useQuery({ queryKey: ['inventory'], queryFn: () => store.getInventory() });
 
   return (
     <div className="space-y-6">
@@ -18,12 +19,8 @@ export default function ViewStock() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Cloth Name</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Total Purchased</TableHead>
-                  <TableHead>Total Sold</TableHead>
-                  <TableHead>Current Stock</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>Cloth Name</TableHead><TableHead>Type</TableHead><TableHead>Total Purchased</TableHead>
+                  <TableHead>Total Sold</TableHead><TableHead>Current Stock</TableHead><TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -35,13 +32,9 @@ export default function ViewStock() {
                     <TableCell>{i.total_sold}m</TableCell>
                     <TableCell className="font-bold">{i.current_stock}m</TableCell>
                     <TableCell>
-                      {i.current_stock <= 0 ? (
-                        <Badge variant="destructive">Out of Stock</Badge>
-                      ) : i.current_stock < 50 ? (
-                        <Badge className="bg-warning text-warning-foreground">Low Stock</Badge>
-                      ) : (
-                        <Badge className="bg-success text-success-foreground">In Stock</Badge>
-                      )}
+                      {i.current_stock <= 0 ? <Badge variant="destructive">Out of Stock</Badge>
+                        : i.current_stock < 50 ? <Badge className="bg-warning text-warning-foreground">Low Stock</Badge>
+                        : <Badge className="bg-success text-success-foreground">In Stock</Badge>}
                     </TableCell>
                   </TableRow>
                 ))}

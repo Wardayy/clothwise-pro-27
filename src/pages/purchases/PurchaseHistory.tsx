@@ -1,15 +1,13 @@
+import { useQuery } from '@tanstack/react-query';
 import { store } from '@/lib/store';
 import { formatPKR } from '@/lib/currency';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export default function PurchaseHistory() {
-  const purchases = store.getPurchases();
-  const cloths = store.getCloths();
-  const factories = store.getFactories();
-
-  const getName = (arr: { cloth_id?: string; factory_id?: string; cloth_name?: string; factory_name?: string }[], id: string, key: string) =>
-    arr.find((a: any) => a[key] === id);
+  const { data: purchases = [] } = useQuery({ queryKey: ['purchases'], queryFn: () => store.getPurchases() });
+  const { data: cloths = [] } = useQuery({ queryKey: ['cloths'], queryFn: () => store.getCloths() });
+  const { data: factories = [] } = useQuery({ queryKey: ['factories'], queryFn: () => store.getFactories() });
 
   return (
     <div className="space-y-6">
@@ -24,29 +22,21 @@ export default function PurchaseHistory() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Cloth</TableHead>
-                    <TableHead>Factory</TableHead>
-                    <TableHead>Quantity</TableHead>
-                    <TableHead>Cost/Meter</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
+                    <TableHead>Cloth</TableHead><TableHead>Factory</TableHead><TableHead>Quantity</TableHead>
+                    <TableHead>Cost/Meter</TableHead><TableHead>Date</TableHead><TableHead className="text-right">Total</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {purchases.map(p => {
-                    const cloth = getName(cloths as any, p.cloth_id, 'cloth_id') as any;
-                    const factory = getName(factories as any, p.factory_id, 'factory_id') as any;
-                    return (
-                      <TableRow key={p.purchase_id}>
-                        <TableCell>{cloth?.cloth_name || 'Unknown'}</TableCell>
-                        <TableCell>{factory?.factory_name || 'Unknown'}</TableCell>
-                        <TableCell>{p.quantity_meter}m</TableCell>
-                        <TableCell>{formatPKR(p.cost_per_meter)}</TableCell>
-                        <TableCell>{p.purchase_date}</TableCell>
-                        <TableCell className="text-right font-medium">{formatPKR(p.total_cost)}</TableCell>
-                      </TableRow>
-                    );
-                  })}
+                  {purchases.map(p => (
+                    <TableRow key={p.purchase_id}>
+                      <TableCell>{cloths.find(c => c.cloth_id === p.cloth_id)?.cloth_name || 'Unknown'}</TableCell>
+                      <TableCell>{factories.find(f => f.factory_id === p.factory_id)?.factory_name || 'Unknown'}</TableCell>
+                      <TableCell>{p.quantity_meter}m</TableCell>
+                      <TableCell>{formatPKR(p.cost_per_meter)}</TableCell>
+                      <TableCell>{p.purchase_date}</TableCell>
+                      <TableCell className="text-right font-medium">{formatPKR(p.total_cost)}</TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </div>
