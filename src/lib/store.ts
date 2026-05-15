@@ -119,6 +119,11 @@ export const store = {
     const [purchases, sales] = await Promise.all([store.getPurchases(), store.getSales()]);
     const totalPurchaseCost = purchases.reduce((s, p) => s + p.total_cost, 0);
     const totalSalesRevenue = sales.reduce((s, sa) => s + sa.total_revenue, 0);
-    return { totalPurchaseCost, totalSalesRevenue, profit: totalSalesRevenue - totalPurchaseCost };
+    const rawProfit = totalSalesRevenue - totalPurchaseCost;
+    // Business rule: never display negative profit. Show 0 with loss flag instead.
+    const profit = Math.max(0, rawProfit);
+    const loss = rawProfit < 0 ? Math.abs(rawProfit) : 0;
+    return { totalPurchaseCost, totalSalesRevenue, profit, loss, isLoss: rawProfit < 0 };
   },
+
 };

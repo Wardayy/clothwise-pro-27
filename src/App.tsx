@@ -20,6 +20,7 @@ import SalesAnalytics from "@/pages/revenue/SalesAnalytics";
 import ManageCloth from "@/pages/master/ManageCloth";
 import ManageFactory from "@/pages/master/ManageFactory";
 import ManageCustomer from "@/pages/master/ManageCustomer";
+import Profile from "@/pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => (
               <Route path="/master/cloth" element={<ManageCloth />} />
               <Route path="/master/factory" element={<ManageFactory />} />
               <Route path="/master/customer" element={<ManageCustomer />} />
+              <Route path="/profile" element={<Profile />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
