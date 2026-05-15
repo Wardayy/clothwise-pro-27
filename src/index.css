@@ -1,72 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 220 20% 97%;
-    --foreground: 220 30% 10%;
+    /* ClothWare Textile ERP — Premium Brand Theme */
+    --background: 210 25% 97%;
+    --foreground: 215 28% 17%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 30% 10%;
+    --card-foreground: 215 28% 17%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 30% 10%;
+    --popover-foreground: 215 28% 17%;
 
-    --primary: 215 80% 48%;
+    /* Deep Navy Blue #1E3A5F */
+    --primary: 213 52% 25%;
     --primary-foreground: 0 0% 100%;
+    --primary-glow: 213 52% 38%;
 
-    --secondary: 220 14% 92%;
-    --secondary-foreground: 220 30% 20%;
+    --secondary: 210 20% 94%;
+    --secondary-foreground: 215 28% 20%;
 
-    --muted: 220 14% 95%;
-    --muted-foreground: 220 10% 46%;
+    --muted: 210 20% 95%;
+    --muted-foreground: 215 14% 45%;
 
-    --accent: 160 60% 45%;
+    /* Royal Teal #0F766E */
+    --accent: 174 77% 26%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 14% 89%;
-    --input: 220 14% 89%;
-    --ring: 215 80% 48%;
+    --border: 215 20% 88%;
+    --input: 215 20% 88%;
+    --ring: 213 52% 25%;
 
-    --radius: 0.625rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 220 30% 12%;
-    --sidebar-foreground: 220 10% 85%;
-    --sidebar-primary: 215 80% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 25% 18%;
-    --sidebar-accent-foreground: 220 10% 90%;
-    --sidebar-border: 220 25% 20%;
-    --sidebar-ring: 215 80% 55%;
+    /* Sidebar — deep navy */
+    --sidebar-background: 213 50% 14%;
+    --sidebar-foreground: 210 20% 85%;
+    --sidebar-primary: 41 86% 47%;
+    --sidebar-primary-foreground: 213 52% 15%;
+    --sidebar-accent: 213 45% 20%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 213 40% 22%;
+    --sidebar-ring: 41 86% 47%;
 
-    --success: 160 60% 45%;
+    --success: 158 64% 38%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
-    --info: 215 80% 48%;
+    /* Golden Mustard #D4A017 */
+    --warning: 41 86% 47%;
+    --warning-foreground: 215 28% 17%;
+    --info: 213 52% 38%;
     --info-foreground: 0 0% 100%;
 
-    --chart-1: 215 80% 48%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 38 92% 50%;
-    --chart-4: 280 60% 55%;
-    --chart-5: 0 72% 51%;
+    --gold: 41 86% 47%;
+    --gold-foreground: 215 28% 17%;
+
+    --chart-1: 213 52% 30%;
+    --chart-2: 174 77% 30%;
+    --chart-3: 41 86% 47%;
+    --chart-4: 280 50% 50%;
+    --chart-5: 0 72% 55%;
+
+    /* Brand gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(213 52% 18%), hsl(174 77% 26%));
+    --gradient-hero: linear-gradient(135deg, hsl(213 52% 14%) 0%, hsl(213 52% 22%) 50%, hsl(174 77% 22%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(41 86% 47%), hsl(41 90% 60%));
+    --shadow-elegant: 0 10px 30px -10px hsl(213 52% 25% / 0.25);
+    --shadow-card: 0 1px 3px hsl(213 30% 20% / 0.06), 0 1px 2px hsl(213 30% 20% / 0.04);
+    --shadow-glow: 0 0 40px hsl(174 77% 35% / 0.35);
+  }
+
+  .dark {
+    --background: 215 28% 9%;
+    --foreground: 210 20% 92%;
+    --card: 215 28% 12%;
+    --card-foreground: 210 20% 92%;
+    --popover: 215 28% 12%;
+    --popover-foreground: 210 20% 92%;
+    --primary: 213 60% 55%;
+    --primary-foreground: 215 28% 9%;
+    --secondary: 215 25% 18%;
+    --secondary-foreground: 210 20% 92%;
+    --muted: 215 25% 16%;
+    --muted-foreground: 215 14% 60%;
+    --accent: 174 65% 42%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 215 25% 20%;
+    --input: 215 25% 20%;
+    --ring: 213 60% 55%;
+    --sidebar-background: 215 30% 7%;
+    --sidebar-foreground: 210 20% 80%;
+    --sidebar-primary: 41 86% 55%;
+    --sidebar-primary-foreground: 215 28% 9%;
+    --sidebar-accent: 215 28% 14%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 215 25% 16%;
+    --success: 158 64% 45%;
+    --warning: 41 86% 55%;
+    --warning-foreground: 215 28% 9%;
+    --info: 213 60% 55%;
+    --gold: 41 86% 55%;
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+  * { @apply border-border; }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     font-family: 'Inter', sans-serif;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: -0.01em;
   }
+}
+
+@layer utilities {
+  .gradient-primary { background: var(--gradient-primary); }
+  .gradient-hero { background: var(--gradient-hero); }
+  .gradient-gold { background: var(--gradient-gold); }
+  .shadow-elegant { box-shadow: var(--shadow-elegant); }
+  .shadow-card-soft { box-shadow: var(--shadow-card); }
+  .shadow-glow { box-shadow: var(--shadow-glow); }
+  .text-gold { color: hsl(var(--gold)); }
+  .bg-gold { background-color: hsl(var(--gold)); }
+
+  .textile-pattern {
+    background-image:
+      repeating-linear-gradient(45deg, hsl(var(--primary) / 0.04) 0 1px, transparent 1px 14px),
+      repeating-linear-gradient(-45deg, hsl(var(--accent) / 0.04) 0 1px, transparent 1px 14px);
+  }
+
+  .animate-fade-in { animation: fade-in 0.4s ease-out; }
+  .animate-scale-in { animation: scale-in 0.25s ease-out; }
+  .hover-lift { @apply transition-all duration-200 hover:-translate-y-0.5 hover:shadow-elegant; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 12s ease infinite;
 }
